@@ -1,0 +1,282 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slot Machine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Nunito:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+        .fixed-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 50;
+        }
+        .fixed-top {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 40;
+        }
+        .fixed-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 40;
+        }
+        .fixed-center {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 30;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+    <div class="bg-red-600 py-4 flex justify-center shadow-2xl fixed-top">
+        <span class="text-white text-2xl font-bold">Casino</span>
+    </div>
+
+    <div class="bg-white p-8 rounded-lg shadow-2xl text-center fixed-center">
+        <h1 class="text-3xl font-bold mb-6">Slot Machine</h1>
+        <div class="flex justify-center space-x-4 mb-6">
+            <div id="slot1" class="text-4xl border-4 border-gray-300 p-4 rounded-lg shadow-2xl">🍒</div>
+            <div id="slot2" class="text-4xl border-4 border-gray-300 p-4 rounded-lg shadow-2xl">🍋</div>
+            <div id="slot3" class="text-4xl border-4 border-gray-300 p-4 rounded-lg shadow-2xl">🍇</div>
+        </div>
+        <button id="spinButton" class="bg-red-600 text-white px-6 py-2 rounded-lg text-lg font-bold hover:bg-red-700 transition duration-300 shadow-2xl">Spin</button>
+        <div id="result" class="mt-6 text-2xl font-bold"></div>
+    </div>
+
+    <div class="bg-red-600 py-4 flex justify-between items-center shadow-2xl px-4 fixed-bottom">
+        <span id="balance" class="text-white text-2xl font-bold">150💵</span>
+        <button id="profitButton" class="bg-white text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 transition duration-300">Exit</button>
+        <span id="lives" class="text-white text-2xl font-bold">5⚡</span>
+    </div>
+
+    <div id="popup" class="fixed-popup bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-2xl text-center">
+            <h2 class="text-2xl font-bold mb-4">Welcome to the Casino!</h2>
+            <p class="mb-4">If you get three identical emojis, you win! If you get a 💩, you lose!</p>
+            <button id="closePopup" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-700 transition duration-300">Got it!</button>
+        </div>
+    </div>
+
+    <div id="profitPopup" class="fixed-popup bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-2xl text-center">
+            <h2 class="text-2xl font-bold mb-4">Your Profit</h2>
+            <p id="profitAmount" class="mb-4"></p>
+            <button id="newGameButton" class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-red-700 transition duration-300">Start New Game</button>
+        </div>
+    </div>
+
+    <script>
+        const emojis = ['🎁', '💵', '🍋', '🍒', '🍇', '💰', '💩', '👻'];
+        const slot1 = document.getElementById('slot1');
+        const slot2 = document.getElementById('slot2');
+        const slot3 = document.getElementById('slot3');
+        const result = document.getElementById('result');
+        const spinButton = document.getElementById('spinButton');
+        const balanceElement = document.getElementById('balance');
+        const livesElement = document.getElementById('lives');
+        const popup = document.getElementById('popup');
+        const closePopup = document.getElementById('closePopup');
+        const profitButton = document.getElementById('profitButton');
+        const profitPopup = document.getElementById('profitPopup');
+        const profitAmount = document.getElementById('profitAmount');
+        const newGameButton = document.getElementById('newGameButton');
+        let balance = 150;
+        let lives = 5;
+        let doubleNextPositive = false;
+
+        function getRandomEmoji() {
+            const random = Math.random();
+            if (random < 0.1) {
+                return '💩'; // 10% chance
+            } else if (random < 0.15) {
+                return '👻'; // 5% chance
+            } else if (random < 0.25) {
+                return '🍋'; // 10% chance
+            } else if (random < 0.35) {
+                return '🍒'; // 10% chance
+            } else if (random < 0.45) {
+                return '🎁'; // 10% chance
+            } else if (random < 0.55) {
+                return '💵'; // 10% chance
+            } else if (random < 0.65) {
+                return '💰'; // 10% chance
+            } else {
+                return '🍇'; // 35% chance
+            }
+        }
+
+        function spin() {
+            if (balance <= 0 || lives <= 0) {
+                result.textContent = 'You lose :(';
+                result.classList.add('text-red-500');
+                result.classList.remove('text-green-500');
+                lives = 0;
+                updateDisplay();
+                return;
+            }
+
+            spinButton.disabled = true; // Disable the spin button during animation
+
+            const interval1 = setInterval(() => {
+                slot1.textContent = getRandomEmoji();
+            }, 100);
+
+            const interval2 = setInterval(() => {
+                slot2.textContent = getRandomEmoji();
+            }, 100);
+
+            const interval3 = setInterval(() => {
+                slot3.textContent = getRandomEmoji();
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(interval1);
+                clearInterval(interval2);
+                clearInterval(interval3);
+
+                const emoji1 = getRandomEmoji();
+                const emoji2 = getRandomEmoji();
+                const emoji3 = getRandomEmoji();
+
+                slot1.textContent = emoji1;
+                slot2.textContent = emoji2;
+                slot3.textContent = emoji3;
+
+                let moneyBagsCount = 0;
+                if (emoji1 === '💰') moneyBagsCount++;
+                if (emoji2 === '💰') moneyBagsCount++;
+                if (emoji3 === '💰') moneyBagsCount++;
+
+                if (emoji1 === emoji2 && emoji2 === emoji3) {
+                    result.textContent = 'BIG WIN!';
+                    result.classList.add('text-green-500');
+                    result.classList.remove('text-red-500');
+                    balance += 50; // Add 50 to balance on win
+                } else if (emoji1 === '💩' || emoji2 === '💩' || emoji3 === '💩') {
+                    result.textContent = 'You lose :(';
+                    result.classList.add('text-red-500');
+                    result.classList.remove('text-green-500');
+                    balance -= 10; // Subtract 10 from balance on loss
+                    lives -= 1; // Subtract 1 life
+                } else if (emoji1 === '🎁' || emoji2 === '🎁' || emoji3 === '🎁') {
+                    const random = Math.random();
+                    if (random < 0.5) {
+                        balance = Math.floor(balance / 2); // Divide balance by 2
+                    } else {
+                        balance *= 2; // Multiply balance by 2
+                    }
+                    result.textContent = '🎁 Gift Effect! 🎁';
+                    result.classList.add('text-blue-500');
+                    result.classList.remove('text-red-500');
+                    result.classList.remove('text-green-500');
+                } else if (emoji1 === '👻' || emoji2 === '👻' || emoji3 === '👻') {
+                    balance = Math.floor(balance / 2); // Divide balance by 2
+                    result.textContent = '👻 Ghost Effect! 👻';
+                    result.classList.add('text-purple-500');
+                    result.classList.remove('text-red-500');
+                    result.classList.remove('text-green-500');
+                } else if (emoji1 === '💵' || emoji2 === '💵' || emoji3 === '💵') {
+                    balance += 15; // Add 15 to balance
+                    result.textContent = '💵 Money Effect! 💵';
+                    result.classList.add('text-yellow-500');
+                    result.classList.remove('text-red-500');
+                    result.classList.remove('text-green-500');
+                } else if (emoji1 === '🍒' || emoji2 === '🍒' || emoji3 === '🍒') {
+                    const random = Math.random();
+                    if (random < 0.5) {
+                        doubleNextPositive = true; // Double the next positive action
+                        result.textContent = '🍒 Tasty Cherry! 🍒';
+                        result.classList.add('text-pink-500');
+                        result.classList.remove('text-red-500');
+                        result.classList.remove('text-green-500');
+                    } else {
+                        balance -= 5; // Subtract 5 from balance
+                        result.textContent = '🍒 Sour Cherry! 🍒';
+                        result.classList.add('text-brown-500');
+                        result.classList.remove('text-red-500');
+                        result.classList.remove('text-green-500');
+                    }
+                } else if (emoji1 === '🍇' || emoji2 === '🍇' || emoji3 === '🍇') {
+                    lives += 1; // Add 1 life
+                    result.textContent = '🍇 Extra Life! 🍇';
+                    result.classList.add('text-green-500');
+                    result.classList.remove('text-red-500');
+                } else if (moneyBagsCount === 3) {
+                    balance += 50; // Add 50 to balance
+                    result.textContent = '💰 Triple Money Bag! 💰';
+                    result.classList.add('text-yellow-500');
+                    result.classList.remove('text-red-500');
+                    result.classList.remove('text-green-500');
+                } else if (moneyBagsCount === 2) {
+                    balance += 35; // Add 35 to balance
+                    result.textContent = '💰 Double Money Bag! 💰';
+                    result.classList.add('text-yellow-500');
+                    result.classList.remove('text-red-500');
+                    result.classList.remove('text-green-500');
+                } else if (moneyBagsCount === 1) {
+                    balance += 15; // Add 15 to balance
+                    result.textContent = '💰 Single Money Bag! 💰';
+                    result.classList.add('text-yellow-500');
+                    result.classList.remove('text-red-500');
+                    result.classList.remove('text-green-500');
+                } else {
+                    result.textContent = 'You lose :(';
+                    result.classList.add('text-red-500');
+                    result.classList.remove('text-green-500');
+                    balance -= 10; // Subtract 10 from balance on loss
+                }
+
+                if (doubleNextPositive && (emoji1 === '💵' || emoji2 === '💵' || emoji3 === '💵' || emoji1 === '🎁' || emoji2 === '🎁' || emoji3 === '🎁')) {
+                    balance *= 2; // Double the balance
+                    doubleNextPositive = false; // Reset the double next positive flag
+                }
+
+                if (balance <= 0) {
+                    balance = 0;
+                    lives = 0;
+                }
+
+                updateDisplay();
+                spinButton.disabled = false; // Enable the spin button after animation
+            }, 2000); // Increased animation duration to 2000ms (2 seconds)
+        }
+
+        function updateDisplay() {
+            balanceElement.textContent = `${balance}💵`;
+            livesElement.textContent = `${lives}⚡`;
+        }
+
+        spinButton.addEventListener('click', spin);
+        closePopup.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+        profitButton.addEventListener('click', () => {
+            profitAmount.textContent = `Your profit is ${balance}💵`;
+            profitPopup.classList.remove('hidden');
+        });
+
+        newGameButton.addEventListener('click', () => {
+            balance = 150;
+            lives = 5;
+            doubleNextPositive = false;
+            updateDisplay();
+            profitPopup.classList.add('hidden');
+            result.textContent = '';
+        });
+    </script>
+</body>
+</html>
