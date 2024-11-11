@@ -464,7 +464,7 @@
                     const randomName = Math.floor(Math.random() * 1000000000);
                     link.download = `${randomName}.png`;
                 } else {
-                    link.download = `${filename}.${format === 'far' ? 'zip' : format}`;
+                    link.download = `${filename}.${format === 'far' ? 'far' : format}`;
                 }
                 link.click();
             });
