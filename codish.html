@@ -128,6 +128,26 @@
             pointer-events: none;
             z-index: -1;
         }
+        .tooltip {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            z-index: 10;
+        }
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
@@ -191,7 +211,8 @@
             </div>
             <div class="mb-4" id="fileContainer" style="display: none;">
                 <label for="displayFile" class="block text-sm font-medium text-gray-700">Attached File</label>
-                <a id="displayFile" class="text-red-500 hover:underline" href="#" target="_blank"></a>
+                <button id="displayFile" class="text-white bg-red-500 hover:bg-red-700 py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Attached File</button>
+                <div id="tooltip" class="tooltip"></div>
             </div>
         </div>
     </div>
@@ -320,9 +341,11 @@
             const date = new Date().toLocaleString();
             const fileInput = document.getElementById('file');
             let fileUrl = '';
+            let fileName = '';
 
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
+                fileName = file.name;
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     fileUrl = e.target.result;
@@ -339,7 +362,8 @@
                     description: description,
                     code: code,
                     date: date,
-                    fileUrl: fileUrl
+                    fileUrl: fileUrl,
+                    fileName: fileName
                 };
                 
                 const encodedData = encodeData(data);
@@ -369,8 +393,31 @@
                     document.getElementById('displayCode').value = decodedData.code;
                     document.getElementById('displayDate').value = decodedData.date;
                     if (decodedData.fileUrl) {
-                        document.getElementById('displayFile').href = decodedData.fileUrl;
-                        document.getElementById('displayFile').textContent = 'Download Attached File';
+                        const fileButton = document.getElementById('displayFile');
+                        fileButton.addEventListener('click', function() {
+                            const isExecutable = /\.(exe|bat|sh|msi|cmd)$/i.test(decodedData.fileName);
+                            if (isExecutable) {
+                                const confirmDownload = confirm('This file is an executable. Are you sure you want to download it?');
+                                if (!confirmDownload) {
+                                    return;
+                                }
+                            }
+                            const link = document.createElement('a');
+                            link.href = decodedData.fileUrl;
+                            link.download = decodedData.fileName;
+                            link.click();
+                        });
+                        fileButton.addEventListener('mouseover', function(event) {
+                            const tooltip = document.getElementById('tooltip');
+                            tooltip.textContent = decodedData.fileName;
+                            tooltip.style.display = 'block';
+                            tooltip.style.left = `${event.pageX}px`;
+                            tooltip.style.top = `${event.pageY + 20}px`;
+                        });
+                        fileButton.addEventListener('mouseout', function() {
+                            const tooltip = document.getElementById('tooltip');
+                            tooltip.style.display = 'none';
+                        });
                         document.getElementById('fileContainer').style.display = 'block';
                     }
                     document.getElementById('codeDisplay').style.display = 'block';
