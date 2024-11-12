@@ -148,6 +148,18 @@
             border-style: solid;
             border-color: #333 transparent transparent transparent;
         }
+        .captcha-container {
+            display: none;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .captcha-container input {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 0.25rem;
+            width: 100%;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
@@ -180,10 +192,16 @@
                 </div>
                 <div class="archive-button">
                     <div class="text">
-                        <button type="submit" class="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <button type="button" id="shareButton" class="w-full text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                             <i class="fas fa-share mr-2"></i>Share
                         </button>
                     </div>
+                </div>
+                <div class="captcha-container" id="captchaContainer">
+                    <p>Please solve the captcha:</p>
+                    <p id="captchaQuestion"></p>
+                    <input type="text" id="captchaAnswer" placeholder="Enter your answer">
+                    <button type="button" id="captchaSubmit" class="mt-2 w-full text-white bg-red-500 hover:bg-red-700 py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Submit</button>
                 </div>
             </form>
             <div class="mt-4 link-container" id="linkContainer" style="display: none;">
@@ -338,9 +356,44 @@
             "retina_detect": true
         });
 
-        document.getElementById('codeForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
+        document.getElementById('shareButton').addEventListener('click', function() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const code = document.getElementById('code').value;
+            const fileInput = document.getElementById('file');
+
+            if (!title && !description && !code && fileInput.files.length === 0) {
+                alert('Please fill in at least one field.');
+                return;
+            }
+
+            generateCaptcha();
+            document.getElementById('captchaContainer').style.display = 'block';
+        });
+
+        document.getElementById('captchaSubmit').addEventListener('click', function() {
+            const captchaAnswer = document.getElementById('captchaAnswer').value;
+            const correctAnswer = document.getElementById('captchaQuestion').dataset.answer;
+
+            if (captchaAnswer === correctAnswer) {
+                document.getElementById('captchaContainer').style.display = 'none';
+                submitForm();
+            } else {
+                alert('Incorrect captcha answer. Please try again.');
+            }
+        });
+
+        function generateCaptcha() {
+            const num1 = Math.floor(Math.random() * 10);
+            const num2 = Math.floor(Math.random() * 10);
+            const question = `${num1} + ${num2} = ?`;
+            const answer = (num1 + num2).toString();
+
+            document.getElementById('captchaQuestion').textContent = question;
+            document.getElementById('captchaQuestion').dataset.answer = answer;
+        }
+
+        function submitForm() {
             const title = document.getElementById('title').value;
             const description = document.getElementById('description').value;
             const code = document.getElementById('code').value;
@@ -385,7 +438,7 @@
                 
                 document.getElementById('codeForm').reset();
             }
-        });
+        }
 
         window.addEventListener('load', function() {
             const hash = window.location.hash.substring(1);
@@ -422,43 +475,4 @@
                             }
                             const link = document.createElement('a');
                             link.href = decodedData.fileUrl;
-                            link.download = decodedData.fileName;
-                            link.click();
-                        });
-                        fileButton.addEventListener('mouseover', function(event) {
-                            const tooltip = document.getElementById('tooltip');
-                            tooltip.textContent = decodedData.fileName;
-                            tooltip.style.display = 'block';
-                            tooltip.style.left = `${event.pageX}px`;
-                            tooltip.style.top = `${event.pageY + 20}px`;
-                        });
-                        fileButton.addEventListener('mouseout', function() {
-                            const tooltip = document.getElementById('tooltip');
-                            tooltip.style.display = 'none';
-                        });
-                        document.getElementById('fileContainer').style.display = 'block';
-                    }
-                    document.getElementById('codeDisplay').style.display = 'block';
-                    document.getElementById('shareCodeSection').style.display = 'none';
-                }
-            }
-        });
-
-        function encodeData(data) {
-            const jsonString = JSON.stringify(data);
-            const compressed = LZString.compressToBase64(jsonString);
-            return compressed;
-        }
-
-        function decodeData(encodedData) {
-            const decompressed = LZString.decompressFromBase64(encodedData);
-            return JSON.parse(decompressed);
-        }
-
-        function generateShortCode() {
-            return Math.random().toString(36).substring(2, 8);
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
-</body>
-</html>
+                            link.download = decodedData.file
