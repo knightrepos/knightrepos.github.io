@@ -1,0 +1,220 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>💾 Codish</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .header, .footer {
+            background-color: #2d333b;
+        }
+        .header h1, .footer p {
+            color: #c9d1d9;
+        }
+        .form-section, .display-section {
+            background-color: #161b22;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-section input, .form-section textarea, .display-section input, .display-section textarea {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 0.5rem;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+        .form-section button {
+            background-color: #238636;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .form-section button:hover {
+            background-color: #2ea043;
+        }
+        .link-container a {
+            color: #58a6ff;
+        }
+        .link-container a:hover {
+            text-decoration: underline;
+        }
+        .form-section h2, .display-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .form-section label, .display-section label {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-section input, .form-section textarea, .display-section input, .display-section textarea {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <header class="header p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">💾 Codish</h1>
+        </div>
+    </header>
+    <main class="container mx-auto py-8">
+        <section id="shareCodeSection" class="form-section">
+            <h2 class="text-3xl font-bold mb-4">Share Your Code</h2>
+            <form id="codeForm">
+                <div class="mb-4">
+                    <label for="title" class="block text-sm font-bold mb-2">Title</label>
+                    <input id="title" type="text" placeholder="Enter the title of your code snippet" required>
+                </div>
+                <div class="mb-4">
+                    <label for="description" class="block text-sm font-bold mb-2">Description</label>
+                    <textarea id="description" placeholder="Enter a brief description" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="code" class="block text-sm font-bold mb-2">Code</label>
+                    <textarea id="code" placeholder="Paste your code here" rows="10" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="file" class="block text-sm font-bold mb-2">Attach File</label>
+                    <input id="file" type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+                <div class="flex items-center justify-between">
+                    <button type="submit">Share</button>
+                </div>
+            </form>
+            <div class="mt-4 link-container" id="linkContainer" style="display: none;">
+                <h3 class="text-xl font-bold mb-2">Your Shareable Link:</h3>
+                <a id="shareableLink" href="#" target="_blank"></a>
+            </div>
+        </section>
+        <section id="codeDisplay" class="display-section" style="display: none;">
+            <h2 class="text-3xl font-bold mb-4">Shared Code</h2>
+            <div class="mb-4">
+                <label for="displayTitle" class="block text-sm font-bold mb-2">Title</label>
+                <input id="displayTitle" type="text" readonly>
+            </div>
+            <div class="mb-4">
+                <label for="displayDescription" class="block text-sm font-bold mb-2">Description</label>
+                <textarea id="displayDescription" rows="3" readonly></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="displayCode" class="block text-sm font-bold mb-2">Code</label>
+                <textarea id="displayCode" rows="10" readonly></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="displayDate" class="block text-sm font-bold mb-2">Date and Time</label>
+                <input id="displayDate" type="text" readonly>
+            </div>
+            <div class="mb-4" id="fileContainer" style="display: none;">
+                <label for="displayFile" class="block text-sm font-bold mb-2">Attached File</label>
+                <a id="displayFile" class="text-blue-500 hover:underline" href="#" target="_blank"></a>
+            </div>
+        </section>
+    </main>
+    <footer class="footer p-4">
+        <div class="container mx-auto text-center">
+            <p>All files are uploaded by users and are not subject to moderation. Download at your own risk.</p>
+        </div>
+    </footer>
+    <script>
+        function encodeData(data) {
+            const jsonString = JSON.stringify(data);
+            const compressed = LZString.compressToBase64(jsonString);
+            return compressed;
+        }
+
+        function decodeData(encodedData) {
+            const decompressed = LZString.decompressFromBase64(encodedData);
+            return JSON.parse(decompressed);
+        }
+
+        function generateShortCode() {
+            return Math.random().toString(36).substring(2, 8);
+        }
+
+        document.getElementById('codeForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const code = document.getElementById('code').value;
+            const date = new Date().toLocaleString();
+            const fileInput = document.getElementById('file');
+            let fileUrl = '';
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fileUrl = e.target.result;
+                    saveData();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                saveData();
+            }
+
+            function saveData() {
+                const data = {
+                    title: title,
+                    description: description,
+                    code: code,
+                    date: date,
+                    fileUrl: fileUrl
+                };
+                
+                const encodedData = encodeData(data);
+                const shortCode = generateShortCode();
+                localStorage.setItem(shortCode, encodedData);
+                
+                const baseUrl = window.location.href.split('#')[0];
+                const shareableUrl = `${baseUrl}#${shortCode}`;
+                
+                document.getElementById('shareableLink').href = shareableUrl;
+                document.getElementById('shareableLink').textContent = shareableUrl;
+                document.getElementById('linkContainer').style.display = 'block';
+                
+                document.getElementById('codeForm').reset();
+            }
+        });
+
+        window.addEventListener('load', function() {
+            const hash = window.location.hash.substring(1);
+            
+            if (hash) {
+                const encodedData = localStorage.getItem(hash);
+                if (encodedData) {
+                    const decodedData = decodeData(encodedData);
+                    document.getElementById('displayTitle').value = decodedData.title;
+                    document.getElementById('displayDescription').value = decodedData.description;
+                    document.getElementById('displayCode').value = decodedData.code;
+                    document.getElementById('displayDate').value = decodedData.date;
+                    if (decodedData.fileUrl) {
+                        document.getElementById('displayFile').href = decodedData.fileUrl;
+                        document.getElementById('displayFile').textContent = 'Download Attached File';
+                        document.getElementById('fileContainer').style.display = 'block';
+                    }
+                    document.getElementById('codeDisplay').style.display = 'block';
+                    document.getElementById('shareCodeSection').style.display = 'none';
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+</body>
+</html>
