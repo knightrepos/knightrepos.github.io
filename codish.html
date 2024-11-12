@@ -171,6 +171,29 @@
                 <a id="shareableLink" href="#" target="_blank"></a>
             </div>
         </div>
+        <div class="form-container" id="codeDisplay" style="display: none;">
+            <h2 class="text-3xl font-bold mb-4">Shared Code</h2>
+            <div class="mb-4">
+                <label for="displayTitle" class="block text-sm font-medium text-gray-700">Title</label>
+                <input id="displayTitle" type="text" readonly>
+            </div>
+            <div class="mb-4">
+                <label for="displayDescription" class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="displayDescription" rows="3" readonly></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="displayCode" class="block text-sm font-medium text-gray-700">Code</label>
+                <textarea id="displayCode" rows="8" readonly></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="displayDate" class="block text-sm font-medium text-gray-700">Date and Time</label>
+                <input id="displayDate" type="text" readonly>
+            </div>
+            <div class="mb-4" id="fileContainer" style="display: none;">
+                <label for="displayFile" class="block text-sm font-medium text-gray-700">Attached File</label>
+                <a id="displayFile" class="text-red-500 hover:underline" href="#" target="_blank"></a>
+            </div>
+        </div>
     </div>
 
     <div class="particles" id="particles-js"></div>
