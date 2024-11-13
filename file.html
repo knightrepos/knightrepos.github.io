@@ -175,12 +175,12 @@
                 </div>
             </form>
             <div class="mt-4 link-container" id="linkContainer" style="display: none;">
-                <h3 class="text-xl font-bold mb-2">Your Shareable Link:</h3>
+                <h3 class="text-xl font-bold mb-2">Link:</h3>
                 <a id="shareableLink" href="#" target="_blank"></a>
             </div>
         </div>
         <div class="form-container" id="codeDisplay" style="display: none;">
-            <h2 class="text-3xl font-bold mb-4">Shared Code</h2>
+            <h2 class="text-3xl font-bold mb-4"></h2>
             <div class="mb-4" id="displayTitleContainer" style="display: none;">
                 <label for="displayTitle" class="block text-sm font-medium">Title</label>
                 <input id="displayTitle" type="text" readonly class="w-full p-2 rounded-md">
@@ -197,6 +197,14 @@
                 <label for="displayFile" class="block text-sm font-medium">Attached Files</label>
                 <div id="fileList" class="space-y-2"></div>
                 <div id="tooltip" class="tooltip"></div>
+            </div>
+            <div class="flex space-x-2 mt-4">
+                <button id="downloadAllButton" class="w-full py-2 px-4 rounded-md bg-teal-500 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                    <i class="fas fa-download mr-2"></i>Download All Files
+                </button>
+                <button id="selectFilesButton" class="w-full py-2 px-4 rounded-md bg-teal-500 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                    <i class="fas fa-list mr-2"></i>Select Files
+                </button>
             </div>
             <div class="mt-4 text-sm text-gray-600">
                 <p>All files are uploaded by users and are not subject to moderation. Download at your own risk.</p>
@@ -412,48 +420,22 @@
             document.getElementById('settingsModal').style.display = 'none';
         });
 
-        function downloadFile(file) {
-            if (currentFileData.downloadLimit && currentFileData.downloadCount >= currentFileData.downloadLimit) {
-                alert('Download limit reached.');
-                return;
+        document.getElementById('downloadAllButton').addEventListener('click', function() {
+            if (currentFileData.password) {
+                document.getElementById('passwordModal').style.display = 'flex';
+                document.getElementById('downloadButton').onclick = function() {
+                    const enteredPassword = document.getElementById('downloadPassword').value;
+                    if (btoa(enteredPassword) === currentFileData.password) {
+                        document.getElementById('passwordModal').style.display = 'none';
+                        downloadAllFiles();
+                    } else {
+                        alert('Incorrect password.');
+                    }
+                };
+            } else {
+                downloadAllFiles();
             }
-
-            const link = document.createElement('a');
-            link.href = file.url;
-            link.download = file.name;
-            link.click();
-
-            currentFileData.downloadCount += 1;
-            const encodedData = encodeData(currentFileData);
-            const shortCode = window.location.hash.substring(1);
-            localStorage.setItem(shortCode, encodedData);
-        }
-
-        function encodeData(data) {
-            const jsonString = JSON.stringify(data);
-            const compressed = LZString.compressToBase64(jsonString);
-            return compressed;
-        }
-
-        function decodeData(encodedData) {
-            const decompressed = LZString.decompressFromBase64(encodedData);
-            return JSON.parse(decompressed);
-        }
-
-        function generateShortCode() {
-            return Math.random().toString(36).substring(2, 8);
-        }
-
-        function onCaptchaVerified() {
-            document.getElementById('captchaModal').style.display = 'none';
-            submissionCount = 0;
-            document.getElementById('shareButton').click();
-        }
-
-        document.getElementById('verifyCaptchaButton').addEventListener('click', function() {
-            grecaptcha.execute();
         });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
-</body>
-</html>
+
+        document.getElementById('selectFilesButton').addEventListener('click', function() {
+            const fileList = document.getElementById
