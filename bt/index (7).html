@@ -226,8 +226,20 @@
         </div>
     </div>
 
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <h2 class="text-xl font-bold mb-4">Enter Password</h2>
+            <div class="mb-4">
+                <label for="downloadPassword" class="block text-sm font-medium">Password</label>
+                <input id="downloadPassword" type="password" placeholder="Enter the password to download the file">
+            </div>
+            <button type="button" id="downloadButton">Download</button>
+        </div>
+    </div>
+
     <script>
         let lastSubmissionTime = 0;
+        let currentFileData = null;
 
         document.getElementById('codeForm').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -278,7 +290,8 @@
                     fileName: fileName,
                     password: password,
                     expiryTime: expiryTime,
-                    downloadLimit: downloadLimit
+                    downloadLimit: downloadLimit,
+                    downloadCount: 0
                 };
                 
                 const encodedData = encodeData(data);
@@ -303,6 +316,7 @@
                 const encodedData = localStorage.getItem(hash);
                 if (encodedData) {
                     const decodedData = decodeData(encodedData);
+                    currentFileData = decodedData;
                     if (decodedData.title) {
                         document.getElementById('displayTitle').value = decodedData.title;
                         document.getElementById('displayTitleContainer').style.display = 'block';
@@ -318,17 +332,11 @@
                     if (decodedData.fileUrl) {
                         const fileButton = document.getElementById('displayFile');
                         fileButton.addEventListener('click', function() {
-                            const isExecutable = /\.(exe|bat|sh|msi|cmd)$/i.test(decodedData.fileName);
-                            if (isExecutable) {
-                                const confirmDownload = confirm('This file is an executable. Are you sure you want to download it?');
-                                if (!confirmDownload) {
-                                    return;
-                                }
+                            if (decodedData.password) {
+                                document.getElementById('passwordModal').style.display = 'flex';
+                            } else {
+                                downloadFile(decodedData);
                             }
-                            const link = document.createElement('a');
-                            link.href = decodedData.fileUrl;
-                            link.download = decodedData.fileName;
-                            link.click();
                         });
                         fileButton.addEventListener('mouseover', function(event) {
                             const tooltip = document.getElementById('tooltip');
@@ -356,6 +364,33 @@
         document.getElementById('saveSettingsButton').addEventListener('click', function() {
             document.getElementById('settingsModal').style.display = 'none';
         });
+
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            const enteredPassword = document.getElementById('downloadPassword').value;
+            if (enteredPassword === currentFileData.password) {
+                document.getElementById('passwordModal').style.display = 'none';
+                downloadFile(currentFileData);
+            } else {
+                alert('Incorrect password.');
+            }
+        });
+
+        function downloadFile(data) {
+            if (data.downloadLimit && data.downloadCount >= data.downloadLimit) {
+                alert('Download limit reached.');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.href = data.fileUrl;
+            link.download = data.fileName;
+            link.click();
+
+            data.downloadCount += 1;
+            const encodedData = encodeData(data);
+            const shortCode = window.location.hash.substring(1);
+            localStorage.setItem(shortCode, encodedData);
+        }
 
         function encodeData(data) {
             const jsonString = JSON.stringify(data);
