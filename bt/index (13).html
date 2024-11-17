@@ -174,10 +174,12 @@
                 if (decompressedData.file) {
                     const fileLink = document.createElement('a');
                     fileLink.href = decompressedData.file;
-                    fileLink.textContent = 'Download File';
-                    fileLink.download = 'file';
+                    fileLink.textContent = `Download ${decompressedData.fileName}`;
+                    fileLink.download = decompressedData.fileName;
                     document.getElementById('file-display').appendChild(fileLink);
                 }
+                document.getElementById('upload-button').style.display = 'none';
+                document.getElementById('download-button').style.display = 'block';
             }
         });
 
@@ -187,6 +189,11 @@
             const description = document.getElementById('description').value;
             const file = document.getElementById('file').files[0];
 
+            if (!username || !description) {
+                alert('Please fill in at least two fields.');
+                return;
+            }
+
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
@@ -194,7 +201,8 @@
                     const data = {
                         username: username,
                         description: description,
-                        file: fileContent
+                        file: fileContent,
+                        fileName: file.name
                     };
                     const compressedData = LZString.compressToBase64(JSON.stringify(data));
                     const longUrl = `${window.location.origin}${window.location.pathname}?data=${compressedData}`;
@@ -266,7 +274,8 @@
                         <input class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-800" id="file" name="file" type="file"/>
                         <div id="file-display" class="mt-2"></div>
                     </div>
-                    <button class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300" type="submit">Upload</button>
+                    <button id="upload-button" class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300" type="submit">Upload</button>
+                    <button id="download-button" class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300" style="display: none;"></button>
                 </form>
             </section>
         </main>
