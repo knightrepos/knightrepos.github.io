@@ -1,0 +1,281 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Aleph - File Sharing
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.cdnfonts.com/css/old-english-five" rel="stylesheet">
+  <style>
+   body {
+            font-family: 'Roboto Mono', monospace;
+        }
+   .old-english {
+            font-family: 'Old English Five', serif;
+        }
+   .text-outline {
+            text-shadow: 
+                -1px -1px 0 #000,  
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
+        }
+   #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+   .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+   .modal-content {
+            background-color: #1a202c;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+  </style>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+   document.addEventListener('DOMContentLoaded', function () {
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 40,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: '#ffffff'
+                    },
+                    shape: {
+                        type: 'circle',
+                        stroke: {
+                            width: 0,
+                            color: '#000000'
+                        },
+                        polygon: {
+                            nb_sides: 5
+                        },
+                        image: {
+                            src: 'img/github.svg',
+                            width: 100,
+                            height: 100
+                        }
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: false,
+                        anim: {
+                            enable: false,
+                            speed: 1,
+                            opacity_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: {
+                            enable: false,
+                            speed: 40,
+                            size_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#ffffff',
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 6,
+                        direction: 'none',
+                        random: false,
+                        straight: false,
+                        out_mode: 'out',
+                        bounce: false,
+                        attract: {
+                            enable: false,
+                            rotateX: 600,
+                            rotateY: 1200
+                        }
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: 'repulse'
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: 'push'
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 400,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        bubble: {
+                            distance: 400,
+                            size: 40,
+                            duration: 2,
+                            opacity: 8,
+                            speed: 3
+                        },
+                        repulse: {
+                            distance: 200,
+                            duration: 0.4
+                        },
+                        push: {
+                            particles_nb: 4
+                        },
+                        remove: {
+                            particles_nb: 2
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+        });
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const description = document.getElementById('description').value;
+            const file = document.getElementById('file').files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const fileContent = e.target.result;
+                    const data = {
+                        username: username,
+                        description: description,
+                        file: fileContent
+                    };
+                    const compressedData = btoa(JSON.stringify(data));
+                    const link = `${window.location.origin}/?data=${compressedData}`;
+                    document.getElementById('modal-link').textContent = link;
+                    document.getElementById('modal').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+  </script>
+ </head>
+ <body class="bg-black text-white flex relative">
+  <div id="particles-js"></div>
+  <aside class="bg-gray-900 w-32 p-4 flex flex-col items-center border-r border-gray-800">
+   <div class="bg-gray-800 w-16 h-16 flex items-center justify-center rounded-lg mt-6 mb-6">
+    <span class="text-4xl old-english">
+     ℵ
+    </span>
+   </div>
+   <nav class="w-full">
+    <ul class="space-y-4 w-full">
+     <li>
+      <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#">
+       Home
+      </a>
+     </li>
+     <li>
+      <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#">
+       Upload
+      </a>
+     </li>
+     <li>
+      <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#">
+       Files
+      </a>
+     </li>
+     <li>
+      <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#">
+       Contact
+      </a>
+     </li>
+    </ul>
+   </nav>
+  </aside>
+  <div class="flex-1 flex flex-col">
+   <header class="bg-gray-900 p-4 border-b border-gray-800">
+    <div class="container mx-auto flex justify-center items-center">
+     <h1 class="text-3xl old-english text-outline">
+      Pirate Bay
+     </h1>
+    </div>
+   </header>
+   <main class="flex-1 flex justify-center items-center">
+    <section class="bg-gray-900 p-8 rounded-2xl shadow-2xl w-96 flex flex-col justify-center">
+     <h2 class="text-3xl mb-6 old-english text-center text-outline">
+      Aleph
+     </h2>
+     <hr class="border-gray-700 mb-6">
+     <form class="space-y-6" enctype="multipart/form-data" method="POST" onsubmit="handleSubmit(event)">
+      <div>
+       <label class="block text-sm font-medium" for="username">
+        Username (public)
+       </label>
+       <input class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-800" id="username" name="username" type="text"/>
+      </div>
+      <div>
+       <label class="block text-sm font-medium" for="description">
+        Description
+       </label>
+       <textarea class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-800" id="description" name="description" rows="3"></textarea>
+      </div>
+      <div>
+       <label class="block text-sm font-medium" for="file">
+        Choose file
+       </label>
+       <input class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-800" id="file" name="file" type="file"/>
+      </div>
+      <button class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300" type="submit">
+       Upload
+      </button>
+     </form>
+    </section>
+   </main>
+  </div>
+  <div class="modal" id="modal">
+   <div class="modal-content">
+    <span class="block text-lg font-bold mb-4">Your Link:</span>
+    <p id="modal-link" class="break-words"></p>
+    <button class="mt-4 bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300" onclick="closeModal()">Close</button>
+   </div>
+  </div>
+ </body>
+</html>
