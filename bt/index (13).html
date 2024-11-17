@@ -54,6 +54,7 @@
         }
   </style>
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
   <script>
    document.addEventListener('DOMContentLoaded', function () {
             particlesJS('particles-js', {
@@ -183,12 +184,21 @@
                         description: description,
                         file: fileContent
                     };
-                    const compressedData = btoa(JSON.stringify(data));
+                    const compressedData = LZString.compressToBase64(JSON.stringify(data));
                     const link = `${window.location.origin}/?data=${compressedData}`;
                     document.getElementById('modal-link').textContent = link;
                     document.getElementById('modal').style.display = 'block';
                 };
                 reader.readAsDataURL(file);
+            } else {
+                const data = {
+                    username: username,
+                    description: description
+                };
+                const compressedData = LZString.compressToBase64(JSON.stringify(data));
+                const link = `${window.location.origin}/?data=${compressedData}`;
+                document.getElementById('modal-link').textContent = link;
+                document.getElementById('modal').style.display = 'block';
             }
         }
 
