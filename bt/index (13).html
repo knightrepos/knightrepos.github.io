@@ -206,7 +206,8 @@
                     };
                     const compressedData = LZString.compressToBase64(JSON.stringify(data));
                     const longUrl = `${window.location.origin}${window.location.pathname}?data=${compressedData}`;
-                    document.getElementById('modal-link').innerHTML = `<a href="${longUrl}" target="_blank">${longUrl}</a>`;
+                    const shortUrl = longUrl.replace(window.location.origin, ''); // Shorten URL for GitHub Pages
+                    document.getElementById('modal-link').innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
                     document.getElementById('modal').style.display = 'block';
                 };
                 reader.readAsDataURL(file);
@@ -217,7 +218,8 @@
                 };
                 const compressedData = LZString.compressToBase64(JSON.stringify(data));
                 const longUrl = `${window.location.origin}${window.location.pathname}?data=${compressedData}`;
-                document.getElementById('modal-link').innerHTML = `<a href="${longUrl}" target="_blank">${longUrl}</a>`;
+                const shortUrl = longUrl.replace(window.location.origin, ''); // Shorten URL for GitHub Pages
+                document.getElementById('modal-link').innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
                 document.getElementById('modal').style.display = 'block';
             }
         }
