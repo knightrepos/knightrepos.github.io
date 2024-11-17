@@ -164,6 +164,22 @@
                 },
                 retina_detect: true
             });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+            if (dataParam) {
+                const decompressedData = JSON.parse(LZString.decompressFromBase64(dataParam));
+                document.getElementById('display-username').textContent = decompressedData.username;
+                document.getElementById('display-description').textContent = decompressedData.description;
+                if (decompressedData.file) {
+                    const fileLink = document.createElement('a');
+                    fileLink.href = decompressedData.file;
+                    fileLink.textContent = 'Download File';
+                    fileLink.download = 'file';
+                    document.getElementById('display-file').appendChild(fileLink);
+                }
+                document.getElementById('display-section').style.display = 'block';
+            }
         });
 
         async function shortenUrl(longUrl) {
@@ -188,7 +204,7 @@
                         file: fileContent
                     };
                     const compressedData = LZString.compressToBase64(JSON.stringify(data));
-                    const longUrl = `${window.location.origin}/?data=${compressedData}`;
+                    const longUrl = `${window.location.origin}${window.location.pathname}?data=${compressedData}`;
                     const shortUrl = await shortenUrl(longUrl);
                     document.getElementById('modal-link').innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
                     document.getElementById('modal').style.display = 'block';
@@ -200,7 +216,7 @@
                     description: description
                 };
                 const compressedData = LZString.compressToBase64(JSON.stringify(data));
-                const longUrl = `${window.location.origin}/?data=${compressedData}`;
+                const longUrl = `${window.location.origin}${window.location.pathname}?data=${compressedData}`;
                 const shortUrl = await shortenUrl(longUrl);
                 document.getElementById('modal-link').innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
                 document.getElementById('modal').style.display = 'block';
@@ -268,6 +284,24 @@
             <span class="block text-lg font-bold mb-4">Your Link:</span>
             <p id="modal-link" class="break-words"></p>
             <button class="mt-4 bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+    <div id="display-section" style="display: none;" class="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center text-white">
+        <div class="bg-gray-900 p-8 rounded-2xl shadow-2xl w-96 flex flex-col justify-center">
+            <h2 class="text-3xl mb-6 old-english text-center text-outline">Aleph - Shared Data</h2>
+            <hr class="border-gray-700 mb-6">
+            <div>
+                <label class="block text-sm font-medium">Username:</label>
+                <p id="display-username" class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm p-2 bg-gray-800"></p>
+            </div>
+            <div class="mt-4">
+                <label class="block text-sm font-medium">Description:</label>
+                <p id="display-description" class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm p-2 bg-gray-800"></p>
+            </div>
+            <div class="mt-4">
+                <label class="block text-sm font-medium">File:</label>
+                <div id="display-file" class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm p-2 bg-gray-800"></div>
+            </div>
         </div>
     </div>
 </body>
