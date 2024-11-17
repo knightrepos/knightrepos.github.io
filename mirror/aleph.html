@@ -166,24 +166,27 @@
             });
 
             const urlParams = new URLSearchParams(window.location.search);
-            const dataParam = urlParams.get('data');
-            if (dataParam) {
-                const decompressedData = JSON.parse(LZString.decompressFromBase64(dataParam));
-                document.getElementById('username').value = decompressedData.username;
-                document.getElementById('description').value = decompressedData.description;
-                if (decompressedData.file) {
-                    const fileLink = document.createElement('a');
-                    fileLink.href = decompressedData.file;
-                    fileLink.textContent = `Download ${decompressedData.fileName}`;
-                    fileLink.download = decompressedData.fileName;
-                    document.getElementById('file-display').appendChild(fileLink);
-                    document.getElementById('download-button').innerHTML = `Download ${decompressedData.fileName}`;
-                    document.getElementById('download-button').href = decompressedData.file;
-                    document.getElementById('download-button').download = decompressedData.fileName;
+            const codeParam = urlParams.get('code');
+            if (codeParam) {
+                const compressedData = localStorage.getItem(codeParam);
+                if (compressedData) {
+                    const decompressedData = JSON.parse(LZString.decompressFromBase64(compressedData));
+                    document.getElementById('username').value = decompressedData.username;
+                    document.getElementById('description').value = decompressedData.description;
+                    if (decompressedData.file) {
+                        const fileLink = document.createElement('a');
+                        fileLink.href = decompressedData.file;
+                        fileLink.textContent = `Download ${decompressedData.fileName}`;
+                        fileLink.download = decompressedData.fileName;
+                        document.getElementById('file-display').appendChild(fileLink);
+                        document.getElementById('download-button').innerHTML = `Download ${decompressedData.fileName}`;
+                        document.getElementById('download-button').href = decompressedData.file;
+                        document.getElementById('download-button').download = decompressedData.fileName;
+                    }
+                    document.getElementById('upload-button').style.display = 'none';
+                    document.getElementById('file-input').style.display = 'none';
+                    document.getElementById('download-button').style.display = 'block';
                 }
-                document.getElementById('upload-button').style.display = 'none';
-                document.getElementById('file-input').style.display = 'none';
-                document.getElementById('download-button').style.display = 'block';
             }
         });
 
@@ -219,9 +222,8 @@
                     };
                     const compressedData = LZString.compressToBase64(JSON.stringify(data));
                     const shortCode = generateShortCode();
-                    const longUrl = `${window.location.origin}${window.location.pathname}?data=${compressedData}`;
-                    const shortUrl = `${window.location.origin}${window.location.pathname}?code=${shortCode}`;
                     localStorage.setItem(shortCode, compressedData);
+                    const shortUrl = `${window.location.origin}${window.location.pathname}?code=${shortCode}`;
                     document.getElementById('modal-link').innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
                     document.getElementById('modal').style.display = 'block';
                 };
@@ -233,9 +235,8 @@
                 };
                 const compressedData = LZString.compressToBase64(JSON.stringify(data));
                 const shortCode = generateShortCode();
-                const longUrl = `${window.location.origin}${window.location.pathname}?data=${compressedData}`;
-                const shortUrl = `${window.location.origin}${window.location.pathname}?code=${shortCode}`;
                 localStorage.setItem(shortCode, compressedData);
+                const shortUrl = `${window.location.origin}${window.location.pathname}?code=${shortCode}`;
                 document.getElementById('modal-link').innerHTML = `<a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
                 document.getElementById('modal').style.display = 'block';
             }
