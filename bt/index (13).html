@@ -168,7 +168,7 @@
             });
         });
 
-        function handleSubmit(event) {
+        async function handleSubmit(event) {
             event.preventDefault();
             const username = document.getElementById('username').value;
             const description = document.getElementById('description').value;
@@ -176,7 +176,7 @@
 
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function (e) {
+                reader.onload = async function (e) {
                     const fileContent = e.target.result;
                     const data = {
                         username: username,
@@ -184,7 +184,25 @@
                         file: fileContent
                     };
                     const compressedData = btoa(JSON.stringify(data));
-                    const link = `${window.location.origin}/?data=${compressedData}`;
+                    const response = await fetch('https://api.github.com/gists', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `token YOUR_GITHUB_TOKEN`
+                        },
+                        body: JSON.stringify({
+                            description: 'File uploaded via Aleph',
+                            public: true,
+                            files: {
+                                'data.json': {
+                                    content: compressedData
+                                }
+                            }
+                        })
+                    });
+                    const result = await response.json();
+                    const gistUrl = result.html_url;
+                    const link = `${window.location.origin}/?gist=${gistUrl}`;
                     document.getElementById('modal-link').textContent = link;
                     document.getElementById('modal').style.display = 'block';
                 };
