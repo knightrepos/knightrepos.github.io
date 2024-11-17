@@ -177,8 +177,12 @@
                     fileLink.textContent = `Download ${decompressedData.fileName}`;
                     fileLink.download = decompressedData.fileName;
                     document.getElementById('file-display').appendChild(fileLink);
+                    document.getElementById('download-button').innerHTML = `Download ${decompressedData.fileName}`;
+                    document.getElementById('download-button').href = decompressedData.file;
+                    document.getElementById('download-button').download = decompressedData.fileName;
                 }
                 document.getElementById('upload-button').style.display = 'none';
+                document.getElementById('file-input').style.display = 'none';
                 document.getElementById('download-button').style.display = 'block';
             }
         });
@@ -271,13 +275,13 @@
                         <label class="block text-sm font-medium" for="description">Description</label>
                         <textarea class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-800" id="description" name="description" rows="3"></textarea>
                     </div>
-                    <div>
+                    <div id="file-input">
                         <label class="block text-sm font-medium" for="file">Choose file</label>
                         <input class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-800" id="file" name="file" type="file"/>
                         <div id="file-display" class="mt-2"></div>
                     </div>
                     <button id="upload-button" class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300" type="submit">Upload</button>
-                    <button id="download-button" class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300" style="display: none;"></button>
+                    <a id="download-button" class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300 text-center" style="display: none;"></a>
                 </form>
             </section>
         </main>
