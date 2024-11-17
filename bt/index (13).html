@@ -193,6 +193,11 @@
             const description = document.getElementById('description').value;
             const file = document.getElementById('file').files[0];
 
+            if (username.length > 50 || description.length > 200) {
+                alert('Username must be less than 50 characters and description must be less than 200 characters.');
+                return;
+            }
+
             if (!username || !description) {
                 alert('Please fill in at least two fields.');
                 return;
@@ -231,6 +236,10 @@
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
         }
+
+        function clearUrl() {
+            window.location.href = window.location.pathname;
+        }
     </script>
 </head>
 <body class="bg-black text-white flex relative">
@@ -242,16 +251,16 @@
         <nav class="w-full">
             <ul class="space-y-4 w-full">
                 <li>
-                    <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#">Home</a>
+                    <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#" onclick="clearUrl()">Home</a>
                 </li>
                 <li>
-                    <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#">Upload</a>
+                    <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#" onclick="clearUrl()">Upload</a>
                 </li>
                 <li>
-                    <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#">Files</a>
+                    <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="https://knightrepos.github.io/cdn/global.md" target="_blank">Terms</a>
                 </li>
                 <li>
-                    <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#">Contact</a>
+                    <a class="hover:bg-gray-800 p-2 rounded-md block text-center" href="#">Mirrors</a>
                 </li>
             </ul>
         </nav>
@@ -269,11 +278,11 @@
                 <form class="space-y-6" enctype="multipart/form-data" method="POST" onsubmit="handleSubmit(event)">
                     <div>
                         <label class="block text-sm font-medium" for="username">Username (public)</label>
-                        <input class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-800" id="username" name="username" type="text"/>
+                        <input class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-800" id="username" name="username" type="text" maxlength="50"/>
                     </div>
                     <div>
                         <label class="block text-sm font-medium" for="description">Description</label>
-                        <textarea class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-800" id="description" name="description" rows="3"></textarea>
+                        <textarea class="mt-1 block w-full border border-gray-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 bg-gray-800" id="description" name="description" rows="3" maxlength="200"></textarea>
                     </div>
                     <div id="file-input">
                         <label class="block text-sm font-medium" for="file">Choose file</label>
