@@ -249,6 +249,14 @@
         function clearUrl() {
             window.location.href = window.location.pathname;
         }
+
+        function handleCodeSubmit(event) {
+            event.preventDefault();
+            const code = document.getElementById('code-input').value;
+            if (code) {
+                window.location.href = `${window.location.origin}${window.location.pathname}?code=${code}`;
+            }
+        }
     </script>
 </head>
 <body class="bg-black text-white flex relative">
@@ -310,6 +318,13 @@
             <p id="modal-link" class="break-words"></p>
             <button class="mt-4 bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300" onclick="closeModal()">Close</button>
         </div>
+    </div>
+    <div class="absolute top-20 left-40 m-4 p-4 bg-gray-900 rounded-lg shadow-lg">
+        <h3 class="text-lg font-bold mb-2">Got a code?</h3>
+        <form class="flex items-center space-x-2" onsubmit="handleCodeSubmit(event)">
+            <input class="bg-gray-800 text-white p-2 rounded-md focus:ring-blue-500 focus:border-blue-500" type="text" id="code-input" placeholder="Enter code" />
+            <button class="bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300" type="submit">Go</button>
+        </form>
     </div>
 </body>
 </html>
