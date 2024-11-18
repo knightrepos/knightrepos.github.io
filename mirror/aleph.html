@@ -173,6 +173,8 @@
                     const decompressedData = JSON.parse(LZString.decompressFromBase64(compressedData));
                     document.getElementById('username').value = decompressedData.username;
                     document.getElementById('description').value = decompressedData.description;
+                    document.getElementById('username').readOnly = true;
+                    document.getElementById('description').readOnly = true;
                     if (decompressedData.file) {
                         const fileLink = document.createElement('a');
                         fileLink.href = decompressedData.file;
@@ -356,7 +358,3 @@
            `"     ""        "%       "YP'       888 ^       `Y"   888  
                                                 *8E              J88"  
                                                 '8>              @%    
-                                                 "             :"      
-    </div>
-</body>
-</html>
